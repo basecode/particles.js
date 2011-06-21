@@ -1,0 +1,472 @@
+<!--
+not yet impemented in browsers:
+svg composite operators for blending 
+http://www.w3.org/TR/SVGCompositing/
+//-->
+<!DOCTYPE html> 
+<html> 
+<head> 
+    <meta charset=utf-8 /> 
+    <title>Particle Test</title> 
+    <style>
+        body { background:#000; margin:0px; font-family:Helvetica; font-size:11px; }
+        canvas { display: block; position:fixed; margin: 0px; background:transparent; }
+        .configPanel { 
+            position:absolute;
+            right:0;
+            top:0;
+            width:250px;
+            padding:5px 10px;
+            background-color:#ddd;
+            border: 2px solid #222;
+            display: block;
+            margin: auto;
+        }
+        h3 {
+            background-color:#d0a251;
+            border-bottom:1px solid #b2841f;
+            text-shadow: 1px 1px 0px #c09348;
+            letter-spacing: 1px;
+            margin:0;
+            font-size:1em;
+            text-align:center;
+            padding:3px 0;
+            color:#52120d;
+        }
+        h4 {
+            background-color:#52120d;
+            border-bottom:1px solid #ce2b14;
+            text-shadow: 1px 1px 0px #000;
+            letter-spacing: 1px;
+            margin:0;
+            text-align:center;
+            padding:5px 0;
+            color:#f3f3f3;
+        }
+        a {
+            text-shadow: 1px 1px 0px #c09348;
+            letter-spacing: 0px;
+            font-size:1em;
+            color:#52120d;
+        }
+        p {
+            padding:5px;
+            background-color:#E8E8E8;
+            border-bottom:1px solid #ccc;
+            margin:2px 0;
+        }
+        label {
+            padding-right:5px;
+        }
+        input {
+            width:40px;
+        }
+        input[name=EXPORT], input[name=IMPORT] {
+            width:170px;
+        }
+    </style> 
+</head> 
+<body> 
+
+<canvas></canvas>
+<div class="configPanel">
+    <h4>PREDEFINED CONFIGURATIONS</h4>
+    <p>
+        <select name="PREDEFINED_CONFIGURATIONS">
+            <option value="burner">Burner</option>
+            <option value="glitterParty">Glitter Party</option>
+            <option value="blueGalaxy">Blue Galaxy</option>
+            <option value="snow">Snow</option>
+            <option value="somethingBlue">Something Blue</option>
+            <option value="comet">Comet</option>
+            <option value="colorfulStars">Colorful Stars</option>
+            <option value="waterFountain">Water Fountain</option>
+            <option value="smoke">Smoke</option>
+            <option value="uxebu">Uxebu</option>
+        </select>
+    </p>
+    <h4>PARTICLE CONFIGURATOR</h4>
+    <p>
+        <label>Particles:</label>
+        <input type="number" min="0" name="totalParticles" value="5">
+    </p>
+    <p>
+        <label>Type:</label>
+        <select name="shape">
+            <option value="Bubble">bubble</option>
+            <option value="Star">star</option>
+            <option value="Sun">sun</option>
+            <option value="Uxebu">uxebu</option>
+        </select>
+    </p>
+    <p>
+        <label>Lifespan:</label>
+        <input type="number" min="0" name="lifespan" value="2">
+        , <label>Var:</label>
+        <input type="number" min="0" name="lifespanVariance" value="0">
+    </p>
+    <p>
+        <label>Startsize:</label>
+        <input type="number" min="0" name="startSize" value="20">
+        , <label class="two">Var:</label>
+        <input type="number" min="0" name="startSizeVariance" value="0">
+    </p>
+    <p>
+        <label>Endsize:</label>
+        <input type="number" min="0" name="endSize" value="5">
+        , <label>Var:</label>
+        <input type="number" min="0" name="endSizeVariance" value="0">
+    </p>
+    <p>
+        <label>Position X:</label>
+        <input type="number" data-type="point" data-key="x" name="position" value="0">
+        , <label>Var:</label>
+        <input type="number" data-type="point" data-key="x" name="positionVariance" value="0">
+    </p>
+    <p>
+        <label>Position Y:</label>
+        <input type="number" data-type="point" data-key="y" name="position" value="0">
+        , <label>Var:</label>
+        <input type="number" data-type="point" data-key="y" name="positionVariance" value="0">
+    </p>
+    <h3>GRAVITY<!-- <a href="">(switch to Radius)</a>//--></h3>
+    <p>
+        <label>Speed:</label>
+        <input type="number" name="speed" value="0">
+        , <label>Var:</label>
+        <input type="number" name="speedVariance" value="0">
+    </p>
+    <p>
+        <label>Gravity X:</label>
+        <input type="number" data-type="point" data-key="x" name="gravity" value="0">
+        , <label>Y:</label>
+        <input type="number" data-type="point" data-key="y" name="gravity" value="0">
+    </p>
+    <p>
+        <label>Angle:</label>
+        <input type="number" name="angle" value="0">
+        , <label>Var:</label>
+        <input type="number" name="angleVariance" value="0">
+    </p>
+    <p>
+        <label>Radial Accel.:</label>
+        <input type="number" name="radialAcceleration" value="0">
+        , <label>Var:</label>
+        <input type="number" name="radialAccelerationVariance" value="0">
+    </p>
+    <p>
+        <label>Tang. Accel.:</label>
+        <input type="number" name="tangentialAcceleration" value="0">
+        , <label>Var:</label>
+        <input type="number" name="tangentialAccelerationVariance" value="0">
+    </p>
+    <h3>COLOR RANGE (0-1)</h3>
+    <p>
+        <label>Startcolor Red:</label>
+        <input type="number" min="0" max="1" step="0.1" data-type="color" data-key="r" name="startColor" value="0">
+        , <label>Var:</label>
+        <input type="number" min="0" max="1" step="0.1" data-type="color" data-key="r" name="startColorVariance" value="0">
+    </p>
+    <p>
+        <label>Startcolor Green:</label>
+        <input type="number" min="0" max="1" step="0.1" data-type="color" data-key="g" name="startColor" value="0">
+        , <label>Var:</label>
+        <input type="number" min="0" max="1" step="0.1" data-type="color" data-key="g" name="startColorVariance" value="0">
+    </p>
+    <p>
+        <label>Startcolor Blue:</label>
+        <input type="number" min="0" max="1" step="0.1" data-type="color" data-key="b" name="startColor" value="0">
+        , <label>Var:</label>
+        <input type="number" min="0" max="1" step="0.1" data-type="color" data-key="b" name="startColorVariance" value="0">
+    </p>
+    <p>
+        <label>Startcolor Alpha:</label>
+        <input type="number" min="0" max="1" step="0.1" data-type="color" data-key="a" name="startColor" value="0">
+        , <label>Var:</label>
+        <input type="number" min="0" max="1" step="0.1" data-type="color" data-key="a" name="startColorVariance" value="0">
+    </p>
+    <p>
+        <label>Endcolor Red:</label>
+        <input type="number" min="0" max="1" step="0.1" data-type="color" data-key="r" name="endColor" value="0">
+        , <label>Var:</label>
+        <input type="number" min="0" max="1" step="0.1" data-type="color" data-key="r" name="endColorVariance" value="0">
+    </p>
+    <p>
+        <label>Endcolor Green:</label>
+        <input type="number" min="0" max="1" step="0.1" data-type="color" data-key="g" name="endColor" value="0">
+        , <label>Var:</label>
+        <input type="number" min="0" max="1" step="0.1" data-type="color" data-key="g" name="endColorVariance" value="0">
+    </p>
+    <p>
+        <label>Endcolor Blue:</label>
+        <input type="number" min="0" max="1" step="0.1" data-type="color" data-key="b" name="endColor" value="0">
+        , <label>Var:</label>
+        <input type="number" min="0" max="1" step="0.1" data-type="color" data-key="b" name="endColorVariance" value="0">
+    </p>
+    <p>
+        <label>Endcolor Alpha:</label>
+        <input type="number" min="0" max="1" step="0.1" data-type="color" data-key="a" name="endColor" value="0">
+        , <label>Var:</label>
+        <input type="number" min="0" max="1" step="0.1" data-type="color" data-key="a" name="endColorVariance" value="0">
+    </p>
+    <h3>COMPOSITE OPERATIONS</h3>
+    <p>
+        <select name="globalComposite">
+            <option value="destination-over">destination-over</option>
+            <option value="source-over">source-over</option>
+            <option value="source-in">source-in</option>
+            <option value="source-out">source-out</option>
+            <option value="source-atop">source-atop</option>
+            <option value="destination-over">destination-over</option>
+            <option value="destination-in">destination-in</option>
+            <option value="destination-out">destination-out</option>
+            <option value="destination-atop">destination-atop</option>
+            <option value="lighter">lighter</option>
+            <option value="darker">darker</option>
+            <option value="copy">copy</option>
+            <option value="xor">xor</option>
+        </select>
+    </p>
+    <h4>EXPORT</h4>
+    <p>
+        <input type="text" name="EXPORT" value="">
+    </p>
+    <h4>IMPORT</h4>
+    <p>
+        <input type="text" name="IMPORT" value="">
+        <button name="IMPORT">OK</button>
+    </p>
+</div>
+
+<script src="global-helper.js" type="text/javascript"></script>
+<script src="particle.js" type="text/javascript"></script>
+<script src="particleSystem.js" type="text/javascript"></script>
+<script>
+
+var ctx, particleSystem;
+
+var predefinedConfigurations = {
+    
+    'snow' : {"shape":"Bubble","emitsAfterMs":16.94,"emitterMode":"GRAVITY","globalComposite":"destination-over","lifespan":2.039,"lifespanVariance":2.171,"startSize":5,"startSizeVariance":10,"endSize":5,"endSizeVariance":0,"position":{"x":600,"y":-20},"positionVariance":{"x":200,"y":10},"speed":0,"speedVariance":506.58,"startColor":{"red":0.9,"green":0.9,"blue":0.9,"alpha":1},"startColorVariance":{"red":0,"green":0,"blue":0,"alpha":0.19},"endColor":{"red":0,"green":0,"blue":0,"alpha":0},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0.24},"radialAcceleration":-30,"radialAccelerationVariance":0,"tangentialAcceleration":0,"tangentialAccelerationVariance":0,"angle":239,"angleVariance":27,"gravity":{"x":0,"y":0},"totalParticles":120},
+    
+    'blueGalaxy' : {"shape":"Bubble","emitsAfterMs":26.31,"emitterMode":"GRAVITY","globalComposite":"lighter","lifespan":4,"lifespanVariance":1,"startSize":15,"startSizeVariance":10,"endSize":15,"endSizeVariance":0,"position":{"x":419,"y":301},"positionVariance":{"x":0,"y":0},"speed":59,"speedVariance":10,"startColor":{"red":0.12,"green":0.25,"blue":0.76,"alpha":1},"startColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"endColor":{"red":0,"green":0,"blue":0,"alpha":1},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":-20,"radialAccelerationVariance":0,"tangentialAcceleration":15,"tangentialAccelerationVariance":0,"angle":90,"angleVariance":360,"gravity":{"x":0,"y":0},"totalParticles":150},
+    
+    'burner' : {"shape":"Bubble","emitsAfterMs":10,"emitterMode":"GRAVITY","globalComposite":"lighter","lifespan":1,"lifespanVariance":0,"startSize":44,"startSizeVariance":0,"endSize":0,"endSizeVariance":0,"position":{"x":425,"y":417},"positionVariance":{"x":5,"y":0},"speed":295,"speedVariance":30,"startColor":{"red":1,"green":0.18,"blue":0,"alpha":0.62},"startColorVariance":{"red":0,"green":0.3,"blue":0,"alpha":0},"endColor":{"red":1,"green":0.18,"blue":0,"alpha":0.5},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":0,"radialAccelerationVariance":0,"tangentialAcceleration":0,"tangentialAccelerationVariance":0,"angle":90,"angleVariance":10,"gravity":{"x":0,"y":50},"totalParticles":100},
+    
+    'uxebu' : {"shape":"Uxebu","emitsAfterMs":100,"emitterMode":"GRAVITY","globalComposite":"lighter","lifespan":3,"lifespanVariance":0,"startSize":80,"startSizeVariance":0,"endSize":0,"endSizeVariance":0,"position":{"x":434,"y":142},"positionVariance":{"x":40,"y":0},"speed":50,"speedVariance":50,"startColor":{"red":1,"green":0.18,"blue":0,"alpha":0.62},"startColorVariance":{"red":0,"green":0.3,"blue":0,"alpha":0},"endColor":{"red":0,"green":0,"blue":0,"alpha":0},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":100,"radialAccelerationVariance":100,"tangentialAcceleration":100,"tangentialAccelerationVariance":100,"angle":270,"angleVariance":90,"gravity":{"x":0,"y":-100},"totalParticles":30},
+    
+    'glitterParty' : {"shape":"Bubble","emitsAfterMs":16.66,"emitterMode":"GRAVITY","globalComposite":"lighter","lifespan":5,"lifespanVariance":0,"startSize":4,"startSizeVariance":32,"endSize":10,"endSizeVariance":0,"position":{"x":412,"y":362},"positionVariance":{"x":278,"y":3},"speed":21,"speedVariance":161,"startColor":{"red":0.17,"green":0.28,"blue":0.83,"alpha":0.33},"startColorVariance":{"red":0.69,"green":0.02,"blue":0.18,"alpha":0.23},"endColor":{"red":0.78,"green":0.16,"blue":0.16,"alpha":0.5},"endColorVariance":{"red":0.19,"green":0.07,"blue":0.04,"alpha":0.68},"radialAcceleration":0,"radialAccelerationVariance":0,"tangentialAcceleration":0,"tangentialAccelerationVariance":0,"angle":45,"angleVariance":67,"gravity":{"x":1.94,"y":0.91},"totalParticles":300},
+    
+    'comet' : {"shape":"Bubble","emitsAfterMs":0.78,"emitterMode":"GRAVITY","globalComposite":"lighter","lifespan":0.197,"lifespanVariance":2.171,"startSize":30,"startSizeVariance":0,"endSize":10,"endSizeVariance":0,"position":{"x":427,"y":335},"positionVariance":{"x":-4,"y":0},"speed":0,"speedVariance":203.95,"startColor":{"red":0.9,"green":0.2,"blue":0.1,"alpha":1},"startColorVariance":{"red":0,"green":0,"blue":0,"alpha":1},"endColor":{"red":0,"green":0.2,"blue":0.2,"alpha":0.5},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":1},"radialAcceleration":0,"radialAccelerationVariance":0,"tangentialAcceleration":0,"tangentialAccelerationVariance":0,"angle":47,"angleVariance":0,"gravity":{"x":-276.32,"y":355.26},"totalParticles":250},
+    
+    'colorfulStars' : {"shape":"Star","emitsAfterMs":6.66,"emitterMode":"GRAVITY","globalComposite":"lighter","lifespan":2,"lifespanVariance":1.513,"startSize":34,"startSizeVariance":24,"endSize":34,"endSizeVariance":0,"position":{"x":427,"y":335},"positionVariance":{"x":400,"y":0},"speed":59,"speedVariance":98.68,"startColor":{"red":0.9,"green":0.2,"blue":0.1,"alpha":1},"startColorVariance":{"red":0.5,"green":0.5,"blue":0.5,"alpha":1},"endColor":{"red":0,"green":0.2,"blue":0.2,"alpha":0.5},"endColorVariance":{"red":0.3,"green":0.3,"blue":0.4,"alpha":1},"radialAcceleration":0,"radialAccelerationVariance":0,"tangentialAcceleration":0,"tangentialAccelerationVariance":0,"angle":284,"angleVariance":185,"gravity":{"x":0,"y":0},"totalParticles":300},
+    
+    'waterFountain' : {"shape":"Bubble","emitsAfterMs":6.33,"emitterMode":"GRAVITY","globalComposite":"lighter","lifespan":1.908,"lifespanVariance":0.855,"startSize":15,"startSizeVariance":5,"endSize":0,"endSizeVariance":0,"position":{"x":427,"y":335},"positionVariance":{"x":7,"y":7},"speed":604,"speedVariance":30,"startColor":{"red":0,"green":0,"blue":1,"alpha":1},"startColorVariance":{"red":0,"green":0,"blue":1,"alpha":1},"endColor":{"red":0.9,"green":0.9,"blue":0.9,"alpha":0},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":0,"radialAccelerationVariance":0,"tangentialAcceleration":0,"tangentialAccelerationVariance":0,"angle":90,"angleVariance":15,"gravity":{"x":0,"y":-750},"totalParticles":300},
+    
+    'somethingBlue' : {"shape":"Bubble","emitsAfterMs":3.33,"emitterMode":"GRAVITY","globalComposite":"lighter","lifespan":1,"lifespanVariance":0.5,"startSize":15,"startSizeVariance":10,"endSize":4,"endSizeVariance":10,"position":{"x":453,"y":513},"positionVariance":{"x":20,"y":15},"speed":300,"speedVariance":50,"startColor":{"red":0,"green":0,"blue":1,"alpha":1},"startColorVariance":{"red":0,"green":0,"blue":1,"alpha":1},"endColor":{"red":0.9,"green":0.9,"blue":0.9,"alpha":0},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":0,"radialAccelerationVariance":0,"tangentialAcceleration":0,"tangentialAccelerationVariance":0,"angle":90,"angleVariance":8,"gravity":{"x":0,"y":0},"totalParticles":300},
+    
+    'smoke' : {"shape":"Bubble","emitsAfterMs":3.33,"emitterMode":"GRAVITY","globalComposite":"lighter","lifespan":1,"lifespanVariance":0.5,"startSize":20,"startSizeVariance":10,"endSize":14,"endSizeVariance":10,"position":{"x":441,"y":396},"positionVariance":{"x":20,"y":15},"speed":86,"speedVariance":50,"startColor":{"red":0.1,"green":0.1,"blue":0.1,"alpha":0.2},"startColorVariance":{"red":0.01,"green":0.01,"blue":0.01,"alpha":0.2},"endColor":{"red":0,"green":0,"blue":0,"alpha":0},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":0,"radialAccelerationVariance":0,"tangentialAcceleration":0,"tangentialAccelerationVariance":0,"angle":90,"angleVariance":8,"gravity":{"x":0,"y":250},"totalParticles":300}
+};
+
+var configFire = {
+    totalParticles : 5,
+    shape : 'Bubble',
+    lifespan : 1.5,
+    lifespanVariance : 2.8,
+    angle : 90,
+    angleVariance : 5,
+    startSize : 64,
+    startSizeVariance : 0,
+    endSize : 10,
+    endSizeVariance : 0,
+    position : Glb.point.make(450,200),
+    positionVariance : Glb.point.make(200,0),
+    radialAcceleration : 0,
+    radialAccelerationVariance : 0,
+    tangentialAcceleration : 0,
+    tangentialAccelerationVariance : 0,
+    speed : 50,
+    speedVariance : 90,
+    startColor : Glb.color.makeRGBA(1,0.18,0.0,0.62),
+    startColorVariance : Glb.color.makeRGBA(0,0.3,0,0),
+    endColor : Glb.color.makeRGBA(1,0.18,0.0,0.5),
+    endColorVariance : Glb.color.makeRGBA(0,0,0,0),
+    globalComposite : 'lighter',
+    gravity : Glb.point.make(0, 0)
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // particleSystem delegate
+    var delegate = {
+        appIsRunningSlow : function(delta) {
+            Glb.console.log("app is running slow");
+        },
+        updateConfig : function(config, delta) {
+            
+            // Point
+            if (delta && delta.value && typeof delta.value.x === "number") {
+                document.querySelector('input[name='+delta.key+'][data-key=x]').value = delta.value.x;
+                document.querySelector('input[name='+delta.key+'][data-key=y]').value = delta.value.y;
+            }
+            
+            // Color
+            if (delta && delta.value && typeof delta.value.red === "number") {
+                document.querySelector('input[name='+delta.key+'][data-key=r]').value = delta.value.red;
+                document.querySelector('input[name='+delta.key+'][data-key=g]').value = delta.value.green;
+                document.querySelector('input[name='+delta.key+'][data-key=b]').value = delta.value.blue;
+                document.querySelector('input[name='+delta.key+'][data-key=a]').value = delta.value.alpha;
+            }
+            
+            //numbers
+            if (delta && typeof delta.value === "number") {
+                var inputNumber = document.querySelector('input[name='+delta.key+']');
+                if (inputNumber && inputNumber.value) {
+                    inputNumber.value = delta.value;
+                }
+            }
+            
+            // shape
+            if (delta && delta.key === 'shape') {
+                document.querySelector('select[name=shape]').selectedIndex = 
+                document.querySelector('select[name=shape]').querySelector('option[value='+delta.value+']').index;
+            }
+            
+            // globalComposite
+            if (delta && delta.key === 'globalComposite') {
+                document.querySelector('select[name=globalComposite]').selectedIndex = 
+                document.querySelector('select[name=globalComposite]').querySelector('option[value='+delta.value+']').index;
+            }
+            
+            document.querySelector('input[name=EXPORT]').value = JSON.stringify(config);
+        }
+    };
+    
+    // setup
+    var c = document.getElementsByTagName('canvas')[0];
+    var ctx = c.getContext('2d');
+
+    c.height = window.innerHeight - 20;
+    c.width  = window.innerWidth - 20;
+    
+    particleSystem = new ParticleSystem(ctx);
+    particleSystem.start().setDelegate(delegate).importConfig(predefinedConfigurations.burner);
+    
+    
+    // configurator
+    for (var i = 0, els = document.getElementsByTagName('input'), len = els.length; i < len; i++) {
+        els[i].addEventListener("input", function(e) {
+            var t = e.target;
+            Glb.console.log(t.type, t.name, t.value);
+            
+            // Points
+            if (t.getAttribute('data-type') && t.getAttribute('data-type') === 'point') {
+                var x = +document.querySelector('input[name='+t.name+'][data-key=x]').value;
+                var y = +document.querySelector('input[name='+t.name+'][data-key=y]').value;
+                particleSystem.updateConfig(t.name, Glb.point.make(x,y));
+                return;
+            }
+            
+            // Colors
+            if (t.getAttribute('data-type') && t.getAttribute('data-type') === 'color') {
+                var r = +document.querySelector('input[name='+t.name+'][data-key=r]').value;
+                var g = +document.querySelector('input[name='+t.name+'][data-key=g]').value;
+                var b = +document.querySelector('input[name='+t.name+'][data-key=b]').value;
+                var a = +document.querySelector('input[name='+t.name+'][data-key=a]').value;
+                particleSystem.updateConfig(t.name, Glb.color.makeRGBA(r,g,b,a));
+                return;
+            }
+                
+            //numbers
+            if (t.type === 'number') {
+                particleSystem.updateConfig(t.name, +t.value);
+            }
+        }, false);
+    };
+    for (var i = 0, els = document.getElementsByTagName('select'), len = els.length; i < len; i++) {
+        els[i].addEventListener("change", function(e) {
+            
+            var t = e.target;
+            
+            // predefined configurations
+            if (t.name === "PREDEFINED_CONFIGURATIONS" && predefinedConfigurations[t.value]) {
+                particleSystem.importConfig(predefinedConfigurations[t.value]);
+                return;
+            }
+            
+            particleSystem.updateConfig(t.name, t.value);
+            
+            // shape type
+            if (t.name === 'shape') {
+                particleSystem.restart();
+            }
+
+        }, false);
+    };
+    
+    // change position - mouse/touch events
+    c.onmousedown = c.ontouchstart = function(e) {
+        
+        
+        particleSystem.updateConfig("position", Glb.point.make(e.clientX, e.clientY));
+        this.clicked = 1;
+        e.preventDefault();
+
+        this.onmousemove = this.ontouchmove = function(e) {
+       
+            if (this.clicked === 1)
+                particleSystem.updateConfig("position", Glb.point.make(e.clientX, e.clientY));
+            e.preventDefault();
+        }
+        
+        this.onmouseup = this.ontouchcancel = this.ontouchend = function(e) {
+            
+            this.clicked = 0;
+            e.preventDefault();
+        }
+    };
+    
+    // window resizing
+    window.addEventListener("onorientationchange" in window ? "orientationchange" : "resize", function() {
+        c.height = window.innerHeight - 20;
+        c.width  = window.innerWidth - 20;
+        //particleSystem.restart();
+    }, false);
+    
+    // import config file
+    document.querySelector("button[name=IMPORT]").addEventListener("click", function(){
+        var input = document.querySelector("input[name=IMPORT]");
+        if (input && input.value.length > 0) {
+            particleSystem.importConfig(JSON.parse(input.value));
+        }
+    }, false);
+    
+    // fullscreen
+    c.onwebkitfullscreenchange = function() {
+        alert("fullscreen");
+    };
+    c.webkitEnterFullscreen = function() {
+        alert("fullscreen");
+    };
+    
+    
+
+}, false);
+
+</script> 
+
+<!--
+    this.imageData = this.context.getImageData(0, 0, this.size.width, this.size.height);
+
+    for (var i = 0, n = this.imageData.data.length; i < n; i += 4) {
+        this.imageData.data[i  ] = 255; // red channel
+        this.imageData.data[i+3] = 127; // alpha channel
+    }
+    
+    // draw the ImageData object at the given (x,y) coordinates.
+    this.context.putImageData(this.imageData, 0, 0);
+//-->
+
+
+</body> 
+</html>
