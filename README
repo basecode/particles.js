@@ -1,0 +1,8 @@
+It«s all about particles.
+
+Particles.js is a small particle system written in javascript highly inspired by Cocos2d«s particle system and @71squared«s Particle Designer .
+
+Particles.js was developed and tested in the latest version of Google Chrome.
+The aim of this project is to have a tiny javascript library which gives you the possibility to embed a particle system to your website.
+
+This project is an experiment and should not be used in your commercial projects.
